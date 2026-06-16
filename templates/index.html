@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecAI Hub - Intelligent Recommendation Engine</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="glass-bg-glow"></div>
+    
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <span class="logo-icon">⚡</span>
+                <h1 class="logo-text">RecAI <span class="gradient-text">Hub</span></h1>
+            </div>
+            <div class="profile-loader">
+                <label for="profileSelect">Load Demo Profile:</label>
+                <div class="select-wrapper">
+                    <select id="profileSelect">
+                        <option value="fresh">Fresh User (No Ratings)</option>
+                        <option value="scifi">Alex (Sci-Fi Enthusiast)</option>
+                        <option value="romance">Sophia (Romance Romantic)</option>
+                        <option value="thriller">Marcus (Thriller / Crime Fan)</option>
+                        <option value="fantasy">Emma (Fantasy & Adventure Lover)</option>
+                        <option value="nonfiction">Liam (Non-Fiction & Drama Reader)</option>
+                    </select>
+                </div>
+                <button id="resetRatingsBtn" class="btn btn-secondary">Clear Ratings</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-grid container">
+        <!-- LEFT PANEL: Library Catalog -->
+        <section class="panel catalog-panel" id="catalog-section" aria-labelledby="catalog-title">
+            <div class="panel-header">
+                <h2 id="catalog-title">Library Catalog</h2>
+                <span class="badge" id="catalogCount">16 Items</span>
+            </div>
+            
+            <!-- Controls for Catalog -->
+            <div class="catalog-controls">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="catalogSearch" placeholder="Search movies, books, genres, directors...">
+                </div>
+                
+                <div class="filter-group">
+                    <button class="filter-tab active" data-filter="all">All</button>
+                    <button class="filter-tab" data-filter="Movie">Movies</button>
+                    <button class="filter-tab" data-filter="Book">Books</button>
+                </div>
+
+                <div class="genre-tags-selector" id="genreFilterContainer">
+                    <!-- Genre filters dynamically injected -->
+                </div>
+            </div>
+
+            <!-- Scrollable Catalog Items Grid -->
+            <div class="catalog-grid" id="catalogGrid">
+                <!-- Cards injected by JS -->
+                <div class="loading-shimmer"></div>
+                <div class="loading-shimmer"></div>
+                <div class="loading-shimmer"></div>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: Recommendation Output & Math -->
+        <div class="right-column-stack">
+            <!-- Algorithm Configuration & Recommendations -->
+            <section class="panel rec-panel" id="recommendation-section" aria-labelledby="recommendation-title">
+                <div class="panel-header">
+                    <h2 id="recommendation-title">AI Recommendations</h2>
+                    <div class="algo-tabs">
+                        <button class="algo-tab active" data-algo="content">Content-Based</button>
+                        <button class="algo-tab" data-algo="collaborative">Collaborative (CF)</button>
+                    </div>
+                </div>
+
+                <div class="rec-intro">
+                    <p id="algorithmDesc">Using Jaccard and Cosine Similarity on item genres and metadata descriptions to find items matching your rated items.</p>
+                </div>
+
+                <!-- Recommended Items Output List -->
+                <div class="rec-results-list" id="recResultsList">
+                    <!-- recommendations injected by JS -->
+                    <div class="empty-state">
+                        <div class="empty-icon">💡</div>
+                        <p>Rate some movies or books in the catalog to get customized recommendations!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Explainable AI Dashboard -->
+            <section class="panel xai-panel" id="xai-section" aria-labelledby="xai-title">
+                <div class="panel-header">
+                    <h2 id="xai-title">Explainable AI (XAI)</h2>
+                    <span class="badge badge-accent">Math Insights</span>
+                </div>
+                
+                <div class="xai-content">
+                    <div id="xaiSummary" class="xai-summary-text">
+                        Select an algorithm and rate items to see calculations.
+                    </div>
+                    
+                    <!-- Dynamic Visualizer (Charts/Bars) -->
+                    <div class="xai-visualization" id="xaiVisualization">
+                        <!-- Similarity bars or Keyword lists injected here -->
+                    </div>
+
+                    <!-- Step-by-Step Math Console -->
+                    <div class="xai-console">
+                        <div class="console-header">
+                            <span>Backend Calculation Log</span>
+                            <span class="console-dot">●</span>
+                        </div>
+                        <div class="console-body" id="xaiConsoleLogs">
+                            <p class="console-line text-muted">> Waiting for inputs...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- SECTION: Add Custom Item Form -->
+    <section class="panel add-item-panel container" id="add-item-section" aria-labelledby="add-item-title">
+        <div class="panel-header">
+            <h2 id="add-item-title">Add Custom Item to Library</h2>
+            <p class="panel-subtitle">Train the model on your own data by introducing new items dynamically.</p>
+        </div>
+        
+        <form id="addItemForm" class="add-item-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="itemTitle">Title *</label>
+                    <input type="text" id="itemTitle" required placeholder="e.g. The Matrix">
+                </div>
+                <div class="form-group">
+                    <label for="itemAuthorDirector">Director / Author *</label>
+                    <input type="text" id="itemAuthorDirector" required placeholder="e.g. Lana Wachowski">
+                </div>
+                <div class="form-group">
+                    <label for="itemType">Type *</label>
+                    <div class="select-wrapper">
+                        <select id="itemType" required>
+                            <option value="Movie">Movie</option>
+                            <option value="Book">Book</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="itemYear">Year</label>
+                    <input type="number" id="itemYear" placeholder="e.g. 1999" min="1800" max="2100">
+                </div>
+                <div class="form-group full-width">
+                    <label for="itemGenres">Genres (Comma separated) *</label>
+                    <input type="text" id="itemGenres" required placeholder="e.g. Sci-Fi, Action, Thriller">
+                </div>
+                <div class="form-group full-width">
+                    <label for="itemDescription">Description (Used by Content TF-IDF Vectorizer) *</label>
+                    <textarea id="itemDescription" rows="3" required placeholder="Write a short description (keywords in the description are analyzed by the AI algorithm)..."></textarea>
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <span>⚡ Add & Fit Model</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <footer class="app-footer-bar">
+        <p>© 2026 RecAI Hub • Developed using Flask, scikit-learn, and Vanilla CSS</p>
+    </footer>
+
+    <!-- Core App JS -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
